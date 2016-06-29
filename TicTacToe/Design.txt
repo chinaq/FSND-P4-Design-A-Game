@@ -1,0 +1,26 @@
+- What additional properties did you add to your models and why?
+
+In Game Entity I added 'board' and 'winner'. The 'board' shows the state of the game.
+The 'winner' shows the result of the game. 
+
+In Score Entity I add 'winner' and 'point'. The 'winner' shows who will get the new points. 
+The 'Point' show how much point will the winner get.
+
+I alse added a new entity 'History' which recorded the game history. 
+It contains 'game', 'move' and 'result'. When the user want to get the history of the game,
+he or she can get the infomations from the history entity. The 'move' shows will position the user moved.
+The 'result' show the message of who won the game.
+
+
+
+
+
+- What were some of the trade-offs or struggles you faced when implementing the new game logic?
+
+When I wanted to add a game history, I have to add a new entity 'History'. But at first I want to 
+add a property 'history' in 'Game' entity, finally I failed to do that. Then I make a trade-off to 
+create a new entity 'History' to records the messages. 
+
+While doing the logic of the winner, I enumerated all situations of the board 
+because I can not find a better way to calculate the result automatically.
+
