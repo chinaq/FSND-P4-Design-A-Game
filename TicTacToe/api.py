@@ -5,6 +5,7 @@ move game logic to another file. Ideally the API will be simple, concerned
 primarily with communication to/from the API's users."""
 
 
+from datetime import date, datetime
 import random
 import logging
 import endpoints
@@ -146,7 +147,8 @@ class TicTacToeApi(remote.Service):
         """Return the game history."""
         game = get_by_urlsafe(request.urlsafe_game_key, Game)
         if game:
-            histories = History.query(History.game==game.key)
+            histories = History.query(History.game==game.key).order(History.datetime)
+            # histories = History.query(History.game==game.key)            
             return HistoryForms(items = [history.to_form() for history in histories])
         else:
             raise endpoints.NotFoundException('Game not found!')
@@ -166,7 +168,7 @@ class TicTacToeApi(remote.Service):
     def cancel_game(self, request):
         """Return the current game state."""
         game = get_by_urlsafe(request.urlsafe_game_key, Game)
-        if game:
+        if game and game.game_over==False:
             # game.message='Time to make a move!'
             game.key.delete()
             return CancelGameForm(message="cancelled")
@@ -205,7 +207,7 @@ class TicTacToeApi(remote.Service):
         if winner != None:
             message = "You win!"
             game.end_game(winner, message)
-            History(game=game.key, move=request.pos, result=message).put()
+            History(game=game.key, move=request.pos, result=message, datetime=datetime.now()).put()
             return game.to_form()
 
 
@@ -222,19 +224,19 @@ class TicTacToeApi(remote.Service):
             if winner != None:
                 message = "You lose!"
                 game.end_game(winner, message)
-                History(game=game.key, move=request.pos, result=message).put()
+                History(game=game.key, move=request.pos, result=message, datetime=datetime.now()).put()
                 return game.to_form()
         
         if game.board.count("-") < 1:
             message = "Tie!"
             game.end_game(None, message)
-            History(game=game.key, move=request.pos, result=message).put()            
+            History(game=game.key, move=request.pos, result=message, datetime=datetime.now()).put()            
             return game.to_form()
 
         message = "Keep moving."
         game.message = message
         game.put()
-        History(game=game.key, move=request.pos, result=message).put()                    
+        History(game=game.key, move=request.pos, result=message, datetime=datetime.now()).put()                    
         return game.to_form()        
 
 

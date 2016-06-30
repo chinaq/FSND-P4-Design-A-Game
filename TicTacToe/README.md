@@ -21,7 +21,9 @@ This version is for one player to `make_move` and the rival is a computer.
 Endpoint will reply with either: 'Keep moving', 'Tie', 'you win', or 'you lose'.
 Many different Tic Tac Toe games can be played by many different Users at any
 given time. Each game can be retrieved or played by using the path parameter
-`urlsafe_game_key`.
+`urlsafe_game_key`. When you win, you got 1 point. When you lose, you got -1 point.
+If you tie with the computuer, you got 0 point.
+
 
 ##Files Included:
  - api.py: Contains endpoints and game playing logic.
@@ -87,7 +89,7 @@ given time. Each game can be retrieved or played by using the path parameter
  - **get_user_games**
     - Path: 'games/user/{user_name}'
     - Method: GET
-    - Parameters: urlsafe_use_key
+    - Parameters: user_name
     - Returns: GameForms of games not finished by user
     - Description: Returns a list of unfinished games of the user.
 

@@ -3,7 +3,7 @@ entities used by the Game. Because these classes are also regular Python
 classes they can include methods (such as 'to_form' and 'new_game')."""
 
 import random
-from datetime import date
+from datetime import date, datetime
 from protorpc import messages
 from google.appengine.ext import ndb
 
@@ -54,12 +54,16 @@ class History(ndb.Model):
     game = ndb.KeyProperty(required=True, kind="Game")
     move = ndb.IntegerProperty(required=True)
     result = ndb.StringProperty(required=True)
-       
+    datetime = ndb.DateTimeProperty(required=True)
+
     def to_form(self):
         """Returns a hisotry form representation of the game history"""
         form = HistoryForm()
         form.move = self.move
         form.result = self.result
+        # if (self.datetime):
+        #     form.datetime=self.datetime.strftime("%Y-%m-%d %H:%M:%S")
+        form.datetime=self.datetime.strftime("%Y-%m-%d %H:%M:%S")
         return form
 
 
@@ -67,7 +71,7 @@ class HistoryForm(messages.Message):
     """History Form"""
     move = messages.IntegerField(1, required=True)
     result = messages.StringField(2, required=True)
-
+    datetime = messages.StringField(3)
 
 
 class HistoryForms(messages.Message):
