@@ -172,6 +172,8 @@ class TicTacToeApi(remote.Service):
             # game.message='Time to make a move!'
             game.key.delete()
             return CancelGameForm(message="cancelled")
+        elif game and game.game_over:
+            raise endpoints.ForbiddenException('Illegal action: Game is already over.')
         else:
             raise endpoints.NotFoundException('Game not found!')
 
@@ -201,15 +203,19 @@ class TicTacToeApi(remote.Service):
         if (game.board[request.pos] != "-"):
             raise endpoints.BadRequestException("can not move here!")    
 
-        # message = ""
+
         game.board = game.board[:request.pos] + "X" + game.board[request.pos+1:]
         winner = self.get_winner(game.board, "X")
+        player_message = "keep moving."
         if winner != None:
-            message = "You win!"
-            game.end_game(winner, message)
-            History(game=game.key, move=request.pos, result=message, datetime=datetime.now()).put()
+            player_message = "You win!"
+        elif game.board.count("-") < 1:
+            player_message = "Tie!"
+        History(game=game.key, move=request.pos, result=player_message, datetime=datetime.now(), player="X").put()
+        if winner != None or game.board.count("-") < 1:
+            game.end_game(winner, player_message)
             return game.to_form()
-
+        
 
         spaces = []
         i = -1
@@ -217,26 +223,21 @@ class TicTacToeApi(remote.Service):
             i += 1
             if (state == "-"):
                 spaces.append(i);
-        if (len(spaces) > 0):
+        if (len(spaces) > 0):          
             robot_move = random.choice(spaces)      
             game.board = game.board[:robot_move] + "O" + game.board[robot_move+1:]
             winner = self.get_winner(game.board, "O")
+            robot_message = "keep moving."  
             if winner != None:
-                message = "You lose!"
-                game.end_game(winner, message)
-                History(game=game.key, move=request.pos, result=message, datetime=datetime.now()).put()
+                robot_message = "You lose!"
+            History(game=game.key, move=robot_move, result=robot_message, datetime=datetime.now(), player="O").put()
+            if winner != None:
+                game.end_game(winner, robot_message)
                 return game.to_form()
         
-        if game.board.count("-") < 1:
-            message = "Tie!"
-            game.end_game(None, message)
-            History(game=game.key, move=request.pos, result=message, datetime=datetime.now()).put()            
-            return game.to_form()
 
-        message = "Keep moving."
-        game.message = message
-        game.put()
-        History(game=game.key, move=request.pos, result=message, datetime=datetime.now()).put()                    
+        game.message = "Keep moving."
+        game.put()                  
         return game.to_form()        
 
 

@@ -55,14 +55,14 @@ class History(ndb.Model):
     move = ndb.IntegerProperty(required=True)
     result = ndb.StringProperty(required=True)
     datetime = ndb.DateTimeProperty(required=True)
+    player = ndb.StringProperty(required=True)
 
     def to_form(self):
         """Returns a hisotry form representation of the game history"""
         form = HistoryForm()
         form.move = self.move
         form.result = self.result
-        # if (self.datetime):
-        #     form.datetime=self.datetime.strftime("%Y-%m-%d %H:%M:%S")
+        form.player = self.player
         form.datetime=self.datetime.strftime("%Y-%m-%d %H:%M:%S")
         return form
 
@@ -72,6 +72,7 @@ class HistoryForm(messages.Message):
     move = messages.IntegerField(1, required=True)
     result = messages.StringField(2, required=True)
     datetime = messages.StringField(3)
+    player = messages.StringField(4)
 
 
 class HistoryForms(messages.Message):

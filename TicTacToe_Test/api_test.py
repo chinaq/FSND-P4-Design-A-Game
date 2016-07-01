@@ -234,7 +234,7 @@ class TicTacToeApiTestCase(unittest.TestCase):
 
     def test_make_move_no_winner(self):        
         # 0.arrange      
-        self.gameToAdd.board = "XXOOXX-O-"
+        self.gameToAdd.board = "XXOOXX-OO"
         self.gameToAdd.put();
 
         container = MAKE_MOVE_REQUEST.combined_message_class(
